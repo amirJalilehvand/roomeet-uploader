@@ -64,7 +64,7 @@ module.exports = async () => {
       await queItem.save();
 
       const newFile = new File({
-        file_path:`http://up.roomeet.ir/download/${item.school.toString()}/${item.fileName}`,
+        file_path:`https://up.roomeet.ir/download/${item.school.toString()}/${item.fileName}`,
         file_size:item.file_size,
         meeting:item.meeting,
         school:item.school,
