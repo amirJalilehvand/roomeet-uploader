@@ -58,7 +58,6 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require('body-parser')
-var FTPS = require("ftps");
 
 const fileRouter = require("./router/file");
 const uploadFile = require("./hooks/uploadFile");
@@ -67,87 +66,51 @@ const app = express();
 app.use(bodyParser.raw({type:'application/octet-stream' , limit:'100mb'}));
 app.use(cors())
 
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "./public/uploads"));
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      new Date().toISOString().replace(/:/g, "-") +
-        "__" +
-        file.originalname.replaceAll(" ", "-")
-    );
-  },
-});
+// let Client = require("ssh2-sftp-client");
+// const File = require("./models/file");
+// const school = require("./models/school");
+// File.findOne()
+//   .then(async (_) => {
+//     const schoolId = "62c16d51b918f956459897e6";
+//     const mainDir = "./sftpdir"
+//     let sftp = new Client();
+//     sftp
+//       .connect({
+//         host: "78.157.34.145",
+//         port: "3698",
+//         username: "sftpuser",
+//         password: "Gb696969+",
+//       })
+//       .then(async() => {
+//         const listedItems = await sftp.list(mainDir);
+//         let subDir = mainDir + '/' + schoolId;
+//         if(listedItems.findIndex(item => item.name === schoolId) < 0){
+//           await sftp.mkdir(subDir);
+//         }
 
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "audio/mpeg" ||
-    ["xls", "xlsx", "pdf", "mkv"].indexOf(
-      file.originalname.split(".")[file.originalname.split(".").length - 1]
-    ) !== -1
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
+//         //return sftp.fastGet(subDir + "/app.js" , './app2.js');
 
-app.use(
-  multer({
-    storage: fileStorage,
-    //limits: { fileSize: 1024 * 1024 * 1024 },
-    fileFilter: fileFilter,
-  }).array("file", 2)
-);
-let Client = require("ssh2-sftp-client");
-const File = require("./models/file");
-const school = require("./models/school");
-File.findOne()
-  .then(async (_) => {
-    const schoolId = "62c16d51b918f956459897e6";
-    const mainDir = "./sftpdir"
-    let sftp = new Client();
-    sftp
-      .connect({
-        host: "78.157.34.145",
-        port: "3698",
-        username: "sftpuser",
-        password: "Gb696969+",
-      })
-      .then(async() => {
-        const listedItems = await sftp.list(mainDir);
-        let subDir = mainDir + '/' + schoolId;
-        if(listedItems.findIndex(item => item.name === schoolId) < 0){
-          await sftp.mkdir(subDir);
-        }
+//         //return sftp.delete(subDir + "/app.js")
+//         return sftp.put("./app.js", subDir + "/app.js");
+//         //return sftp.delete('./sftpdir/app.mkv')
+//       })
+//       .then((data) => {
+//         console.log(data, "the data info");
+//       })
+//       .catch((err) => {
+//         console.log(err, "catch error");
+//       });
 
-        //return sftp.fastGet(subDir + "/app.js" , './app2.js');
+//     // Do some amazing things
+//     //ftps.ls().exec(console.log);
+//     //ftps.put('./hooks/uploadFile.js' , './')
+//     // ftps.pwd().exec(function (err, res) {
+//     //   if (err || res.error) return console.log("Error", err || res.error);
+//     //   console.log(res);
+//     // });
+//   })
+//   .catch((err) => console.log(err));
 
-        //return sftp.delete(subDir + "/app.js")
-        return sftp.put("./app.js", subDir + "/app.js");
-        //return sftp.delete('./sftpdir/app.mkv')
-      })
-      .then((data) => {
-        console.log(data, "the data info");
-      })
-      .catch((err) => {
-        console.log(err, "catch error");
-      });
-
-    // Do some amazing things
-    //ftps.ls().exec(console.log);
-    //ftps.put('./hooks/uploadFile.js' , './')
-    // ftps.pwd().exec(function (err, res) {
-    //   if (err || res.error) return console.log("Error", err || res.error);
-    //   console.log(res);
-    // });
-  })
-  .catch((err) => console.log(err));
 app.use("/file", fileRouter);
 
 // const func= async () => {
@@ -164,7 +127,7 @@ mongoose.connect(
     if (err) {
       console.log(err);
     } else {
-      //func()
+      uploadFile()
       console.log("mongo connected");
       app.listen(5000);
     }
