@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 
 const fileRouter = require("./router/file");
 const uploadFile = require("./hooks/uploadFile");
+const removeFile = require("./hooks/changeFileName");
 
 const app = express();
 app.use(bodyParser.raw({type:'application/octet-stream' , limit:'100mb'}));
@@ -23,7 +24,8 @@ mongoose.connect(
     if (err) {
       console.log(err);
     } else {
-      uploadFile()
+      //uploadFile()
+      removeFile()
       console.log("mongo connected");
       app.listen(5000);
     }

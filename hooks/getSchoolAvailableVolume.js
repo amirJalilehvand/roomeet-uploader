@@ -10,7 +10,7 @@ module.exports = async (schoolId) => {
     
     if(!school || school.isRemoved){
         //todos error
-        throw new Error("no files wre found");
+        throw new Error("no files were found");
     }
 
     if(!school.fileService || !school.fileService.total){
